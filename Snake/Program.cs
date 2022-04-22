@@ -29,7 +29,6 @@ namespace Snake_Game
         public string output_border = "Yes";
         public string output_snake = "Yes";
 
-
         public int scene = 0;
 
         public int score = 0;
