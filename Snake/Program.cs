@@ -1,49 +1,59 @@
 ﻿using System;
 using System.Threading;
 
+/*      Snake Game (School project)
+ *  github: 
+ *  
+ *  starting date: 4.21.
+ *  finish date: 4.22.
+ *  
+ *  notes:
+ *  - not used to c# so the code might be messy
+ */
+
 namespace Snake_Game
 {
     class Snake
     {
-        static int height = 20;
-        static int width = 40;
+        public static int height = 20; // velikost
+        public static int width = 40;
 
-        int[] X = new int[800];
-        int[] Y = new int[800];
+        public int[] X = new int[800]; // maximalni velikost hada
+        public int[] Y = new int[800];
 
-        public int selected = 0;
-        public int body;
-        public int speed;
-        public bool border_col;
-        public bool snake_col;
-        public int best_score = 0;
-        public int body_start;
+        public int selected = 0; // zvoleny prvek v gui
+        public int body; // pocet bunek
+        public int speed; // rychlost
+        public bool border_col; // kolize hranice
+        public bool snake_col; // kolize tela hada
+        public int best_score = 0; // nejlepsi skore
+        public int body_start; // startovni pocet bunek hada
 
-        public string output_border = "Yes";
+        public string output_border = "Yes"; // output veci
         public string output_snake = "Yes";
 
-        public int scene = 0;
+        public int scene = 0; // zvolene gui
         
-        public int score = 0;
+        public int score = 0; // skore
 
-        int appleX;
-        int appleY;
+        public int appleX; // pozice jablicka
+        public int appleY;
 
         ConsoleKeyInfo keyInfo = new ConsoleKeyInfo();
-        char key = 'd';
+        public char key = 'd'; // startovni smer hada (lze vymnenit s 'D' aby pockal na hracuv input po startu)
 
         Random rnd = new Random();
 
-        Snake()
+        Snake() // defaultni hodnoty pri startu
         {
-            X[0] = 5;
+            X[0] = 5; // pozice hada
             Y[0] = 5;
             Console.CursorVisible = false;
-            appleX = rnd.Next(2, (width - 2));
+            appleX = rnd.Next(2, (width - 2)); // urceni polohy jablicka
             appleY = rnd.Next(2, (height - 2));
         }
 
-        public void RenderBoard()
+        public void RenderBoard() // vykreslovani plochy
         {
             Snake.Clear(1, 1, width + 1, height + 1);
             Console.ForegroundColor = ConsoleColor.DarkGray;
@@ -77,7 +87,7 @@ namespace Snake_Game
                 Console.SetCursorPosition(width + 2, i);
                 Console.Write("║");
             }
-            Console.SetCursorPosition(5, height + 3);
+            Console.SetCursorPosition(5, height + 3); // vykreslovani skore
             Console.Write("Score: ");
             Console.ForegroundColor = ConsoleColor.Gray;
             Console.Write(score);
@@ -89,13 +99,14 @@ namespace Snake_Game
             Console.ForegroundColor = ConsoleColor.DarkGray;
         }
 
-        public void Input()
+        public void Input() // ziskavani klavesnice
         {
             if(Console.KeyAvailable)
             {
-                keyInfo = Console.ReadKey(true);
+                keyInfo = Console.ReadKey(true); // ziska klavesu
                 if (keyInfo.KeyChar == 'w' || keyInfo.KeyChar == 's' || keyInfo.KeyChar == 'd' || keyInfo.KeyChar == 'a')
                 {
+                    // prevence aby nemohl hrac zatocit opposite smerem nez jede
                     if(key == 'w' && keyInfo.KeyChar != 's')
                         key = keyInfo.KeyChar;
                     if (key == 'a' && keyInfo.KeyChar != 'd')
@@ -105,51 +116,49 @@ namespace Snake_Game
                     if (key == 'd' && keyInfo.KeyChar != 'a')
                         key = keyInfo.KeyChar;
                 }
-                if (keyInfo.Key == ConsoleKey.Escape && scene != 0)
+                if (keyInfo.Key == ConsoleKey.Escape && scene != 0) // prepisovani escapu
                 {
                     key = '0';
                 }
-                if (keyInfo.Key == ConsoleKey.Enter)
+                if (keyInfo.Key == ConsoleKey.Enter && scene != 2) // prepisovani entru
                 {
                     key = '1';
                 }
             }
         }
 
-        public void WritePoint(int x, int y, int type)
+        public void PointPos(int x, int y, int type) // vykreslovani bunky
         {
 
-            Console.SetCursorPosition(x, y);
-            if (x > 0 && x < width + 2 && y > 0 && y < height + 2)
+            Console.SetCursorPosition(x, y); // nastaveni pozice
+            if (x > 0 && x < width + 2 && y > 0 && y < height + 2) // prevence aby se bunky nevykreslovali za hranici
             {
-                if (type == 0)
+                if (type == 0) // hlava
                 {
                     Console.ForegroundColor = ConsoleColor.DarkGreen;
                     Console.Write('0');
                 }
-                if (type == 1)
+                if (type == 1) // telo
                 {
-                    if (!(X[0] == x && Y[0] == y))
+                    if (!(X[0] == x && Y[0] == y)) // prevence aby se hlava vykreslovala vzdy navrchu tela
                     {
                         Console.ForegroundColor = ConsoleColor.Green;
                         Console.Write('O');
                     }
                 }
             }
-            if (type == 2)
+            if (type == 2) // jablicko
             {
                 Console.ForegroundColor = ConsoleColor.Red;
-                Console.Write('a');
+                Console.Write('o');
             }
-
-            Console.ForegroundColor = ConsoleColor.White;
         }
 
         public void Logic()
         {
             Snake snake = new Snake();
 
-            if (snake_col)
+            if (snake_col) // kolize tela hada
             {
                 for (int i = 1; i <= body; i++)
                 {
@@ -160,15 +169,13 @@ namespace Snake_Game
                 }
             }
 
-            if (border_col)
+            if (border_col) // kolize s hranici
             {
                 if(X[0] == width + 2 || Y[0] == height + 2 || X[0] == 0 || Y[0] == 0)
                     Init(3, best_score, body_start, speed, border_col, snake_col);
             }
-            else
+            else // presunuti hada na druhou stranu
             {
-                if (X[0] == width + 1 || Y[0] == height + 1 || X[0] == 1 || Y[0] == 1) ;
-
                 if(X[0] == width + 1 && key == 'd')
                 {
                     X[0] = 0;
@@ -185,23 +192,22 @@ namespace Snake_Game
                 {
                     Y[0] = height + 2;
                 }
-
             }
 
-            if(score > best_score)
+            if(score > best_score) // nejlepsi score
                 best_score = score;
 
-            if(X[0] == appleX)
+            if(X[0] == appleX) // pridavani bunek hada kdyz je na jablicku
             {
                 if(Y[0] == appleY)
                 {
                     body++;
                     score++;
 
-                    appleX = rnd.Next(2, (width - 2));
+                    appleX = rnd.Next(2, (width - 2)); // generace noveho jablicka
                     appleY = rnd.Next(2, (height - 2));
 
-                    for (int i = 0; i < body; i++)
+                    for (int i = 0; i < body; i++) // prevence generace jablicka v hadovo tele
                     {
                         if(X[i] == appleX && Y[i] == appleY)
                         {
@@ -213,13 +219,13 @@ namespace Snake_Game
                 }
             }
 
-            for(int i = body; i > 1; i--)
+            for(int i = body; i > 1; i--) // urcovani polohy bunek za hadem
             {
                 X[i - 1] = X[i - 2];
                 Y[i - 1] = Y[i - 2];
             }
 
-            switch(key)
+            switch(key) // smerovaci mechanismus
             {
                 case 'w':
                     if (scene == 2)
@@ -242,16 +248,17 @@ namespace Snake_Game
                     break;
             }
 
-            for (int i = 0; i <= (body - 1); i++)
+            for (int i = 0; i <= (body - 1); i++) // vykreslovani charakteru
             {
                 if (i == 0)
-                    WritePoint(X[i], Y[i], 0); // snake head
+                    PointPos(X[i], Y[i], 0); // snake head
                 else
-                    WritePoint(X[i], Y[i], 1); // snake body
-                WritePoint(appleX, appleY, 2); // apple
+                    PointPos(X[i], Y[i], 1); // snake body
+
+                PointPos(appleX, appleY, 2); // apple
             }
 
-            switch(speed)
+            switch(speed) // rychlost hry
             {
                 case 1:
                     Thread.Sleep(300);
@@ -292,6 +299,7 @@ namespace Snake_Game
 
             Snake.Clear(0, 0, 43, 25);
 
+            // gui
             Console.SetCursorPosition(0, 0);
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("\t   _____             _        ");
@@ -333,8 +341,9 @@ namespace Snake_Game
                 Console.Write(" <<");
             }
 
-            snake.Input();
+            snake.Input(); // ceka na input
 
+            // pohybovani v menu
             if (snake.keyInfo.Key == ConsoleKey.W)
             {
                 selected--;
@@ -349,6 +358,7 @@ namespace Snake_Game
                     selected = 0;
             }
 
+            // zavolani funkci
             if (snake.keyInfo.Key == ConsoleKey.Enter)
             {
                 if (selected == 0)
@@ -366,12 +376,13 @@ namespace Snake_Game
             Thread.Sleep(100);
         }
 
-        public void Gameover()
+        public void GameOver()
         {
             Snake snake = new Snake();
 
             Snake.Clear(0, 0, 43, 25);
 
+            // gui
             Console.SetCursorPosition(5, 2);
             Console.ForegroundColor = ConsoleColor.DarkGray;
             Console.Write(">>>>\t");
@@ -390,11 +401,11 @@ namespace Snake_Game
             Console.ForegroundColor = ConsoleColor.Gray;
             Console.Write(score);
 
-            snake.Input();
+            snake.Input(); // ceka na input
 
             if (snake.keyInfo.Key == ConsoleKey.Enter)
             {
-                Init(0, best_score, body_start, speed, border_col, snake_col);
+                Init(0, best_score, body_start, speed, border_col, snake_col); // zavola menu
             }
 
             Thread.Sleep(100);
@@ -406,6 +417,7 @@ namespace Snake_Game
 
             Snake.Clear(0, 0, 43, 25);
 
+            // gui
             Console.SetCursorPosition(0, 0);
             Console.ForegroundColor = ConsoleColor.Gray;
             Console.WriteLine("═══════════════  Settings  ════════════════");
@@ -443,8 +455,9 @@ namespace Snake_Game
                 Console.ForegroundColor = ConsoleColor.Red;
             Console.Write("\n\tBack"); // 4
 
-            snake.Input();
+            snake.Input(); // ziskava input
 
+            // resi zvoleny prvek v gui
             if (snake.keyInfo.Key == ConsoleKey.W)
             {
                 selected--;
@@ -459,6 +472,7 @@ namespace Snake_Game
                     selected = 0;
             }
 
+            // funcke prvnku
             if (selected == 0)
             {
                 if (snake.keyInfo.Key == ConsoleKey.D && body_start < 10)
@@ -512,6 +526,7 @@ namespace Snake_Game
             Thread.Sleep(100);
         }
 
+        // cisteni konzole
         static void Clear(int x, int y, int width, int height)
         {
             Snake snake = new Snake();
@@ -529,6 +544,7 @@ namespace Snake_Game
         {
             Snake snake = new Snake();
 
+            // nastavovani deafultnich vars
             snake.speed = speed;
             snake.body = body_start;
             snake.scene = start;
@@ -537,6 +553,7 @@ namespace Snake_Game
             snake.snake_col = snake_c;
             snake.body_start = body_start;
 
+            // gui
             while (true)
             {
                 switch (snake.scene)
@@ -553,7 +570,7 @@ namespace Snake_Game
                         snake.Logic();
                         break;
                     case 3:
-                        Gameover();
+                        GameOver();
                         break;
                 }
             }
@@ -561,7 +578,7 @@ namespace Snake_Game
 
         static void Main(string[] args)
         {
-            Console.SetWindowSize(43, 25);
+            Console.SetWindowSize(43, 25); // urceni velikosti okna
             Snake snake = new Snake();
 
             snake.Init(0, 0, 3, 5, true, true);
