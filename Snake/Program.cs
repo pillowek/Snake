@@ -1,13 +1,6 @@
 ﻿using System;
 using System.Threading;
 
-/*   TODO:
- * - border
- * - crash
- * - snake color
- */
-
-
 namespace Snake_Game
 {
     class Snake
@@ -30,7 +23,7 @@ namespace Snake_Game
         public string output_snake = "Yes";
 
         public int scene = 0;
-
+        
         public int score = 0;
 
         int appleX;
@@ -127,17 +120,20 @@ namespace Snake_Game
         {
 
             Console.SetCursorPosition(x, y);
-            if (type == 0)
+            if (x > 0 && x < width + 2 && y > 0 && y < height + 2)
             {
-                Console.ForegroundColor = ConsoleColor.DarkGreen;
-                Console.Write('0');
-            }
-            if (type == 1)
-            {
-                if (!(X[0] == x && Y[0] == y))
+                if (type == 0)
                 {
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.Write('O');
+                    Console.ForegroundColor = ConsoleColor.DarkGreen;
+                    Console.Write('0');
+                }
+                if (type == 1)
+                {
+                    if (!(X[0] == x && Y[0] == y))
+                    {
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.Write('O');
+                    }
                 }
             }
             if (type == 2)
@@ -152,6 +148,46 @@ namespace Snake_Game
         public void Logic()
         {
             Snake snake = new Snake();
+
+            if (snake_col)
+            {
+                for (int i = 1; i <= body; i++)
+                {
+                    if (X[0] == X[i] && Y[0] == Y[i])
+                    {
+                        Init(3, best_score, body_start, speed, border_col, snake_col);
+                    }
+                }
+            }
+
+            if (border_col)
+            {
+                if(X[0] == width + 2 || Y[0] == height + 2 || X[0] == 0 || Y[0] == 0)
+                    Init(3, best_score, body_start, speed, border_col, snake_col);
+            }
+            else
+            {
+                if (X[0] == width + 1 || Y[0] == height + 1 || X[0] == 1 || Y[0] == 1) ;
+
+                if(X[0] == width + 1 && key == 'd')
+                {
+                    X[0] = 0;
+                }
+                if (X[0] == 1 && key == 'a')
+                {
+                    X[0] = width + 2;
+                }
+                if (Y[0] == height + 1 && key == 's')
+                {
+                    Y[0] = 0;
+                }
+                if (Y[0] == 1 && key == 'w')
+                {
+                    Y[0] = height + 2;
+                }
+
+            }
+
             if(score > best_score)
                 best_score = score;
 
@@ -202,7 +238,7 @@ namespace Snake_Game
                         X[0]--;
                     break;
                 case '0':
-                    Init(best_score, body_start, speed, border_col, snake_col);
+                    Init(0, best_score, body_start, speed, border_col, snake_col);
                     break;
             }
 
@@ -330,6 +366,40 @@ namespace Snake_Game
             Thread.Sleep(100);
         }
 
+        public void Gameover()
+        {
+            Snake snake = new Snake();
+
+            Snake.Clear(0, 0, 43, 25);
+
+            Console.SetCursorPosition(5, 2);
+            Console.ForegroundColor = ConsoleColor.DarkGray;
+            Console.Write(">>>>\t");
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.Write("Game Over!");
+            Console.ForegroundColor = ConsoleColor.DarkGray;
+            Console.Write("\t<<<<");
+
+            Console.SetCursorPosition(9, 4);
+            Console.ForegroundColor = ConsoleColor.Gray;
+            Console.Write("Press Enter to Continue");
+
+            Console.SetCursorPosition(14, 6);
+            Console.ForegroundColor = ConsoleColor.DarkGray;
+            Console.Write("Final Score: ");
+            Console.ForegroundColor = ConsoleColor.Gray;
+            Console.Write(score);
+
+            snake.Input();
+
+            if (snake.keyInfo.Key == ConsoleKey.Enter)
+            {
+                Init(0, best_score, body_start, speed, border_col, snake_col);
+            }
+
+            Thread.Sleep(100);
+        }
+
         public void Settings()
         {
             Snake snake = new Snake();
@@ -431,13 +501,13 @@ namespace Snake_Game
 
                 if (selected == 4)
                 {
-                    Init(best_score, body_start, speed, border_col, snake_col);
+                    Init(0, best_score, body_start, speed, border_col, snake_col);
                 }
             }
 
             if (snake.keyInfo.Key == ConsoleKey.Escape)
             {
-                Init(best_score, body_start, speed, border_col, snake_col);
+                Init(0, best_score, body_start, speed, border_col, snake_col);
             }
             Thread.Sleep(100);
         }
@@ -451,17 +521,17 @@ namespace Snake_Game
             {
                 Console.SetCursorPosition(x, y + --height);
                 Console.Write(new string(' ', width));
-            }
+            }   
             Console.SetCursorPosition(curLeft, curTop);
         }
 
-        public void Init(int best, int body_start, int speed, bool border_c, bool snake_c)
+        public void Init(int start, int best, int body_start, int speed, bool border_c, bool snake_c)
         {
             Snake snake = new Snake();
 
             snake.speed = speed;
             snake.body = body_start;
-            snake.scene = 0;
+            snake.scene = start;
             snake.best_score = best;
             snake.border_col = border_c;
             snake.snake_col = snake_c;
@@ -482,6 +552,9 @@ namespace Snake_Game
                         snake.Input();
                         snake.Logic();
                         break;
+                    case 3:
+                        Gameover();
+                        break;
                 }
             }
         }
@@ -491,7 +564,7 @@ namespace Snake_Game
             Console.SetWindowSize(43, 25);
             Snake snake = new Snake();
 
-            snake.Init(0, 3, 5, true, true);
+            snake.Init(0, 0, 3, 5, true, true);
         }
     }
 }
