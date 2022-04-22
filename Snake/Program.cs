@@ -25,11 +25,10 @@ namespace Snake_Game
         public bool snake_col;
         public int best_score = 0;
         public int body_start;
-        public bool adaptive_speed;
 
         public string output_border = "Yes";
         public string output_snake = "Yes";
-        public string output_speed = "No";
+
 
         public int scene = 0;
 
@@ -127,6 +126,7 @@ namespace Snake_Game
 
         public void WritePoint(int x, int y, int type)
         {
+
             Console.SetCursorPosition(x, y);
             if (type == 0)
             {
@@ -162,9 +162,6 @@ namespace Snake_Game
                 {
                     body++;
                     score++;
-
-                    if(adaptive_speed && score % 5 == 0)
-                        speed++;
 
                     appleX = rnd.Next(2, (width - 2));
                     appleY = rnd.Next(2, (height - 2));
@@ -206,7 +203,7 @@ namespace Snake_Game
                         X[0]--;
                     break;
                 case '0':
-                    Init(best_score, body_start, speed, border_col, snake_col, adaptive_speed);
+                    Init(best_score, body_start, speed, border_col, snake_col);
                     break;
             }
 
@@ -435,13 +432,13 @@ namespace Snake_Game
 
                 if (selected == 4)
                 {
-                    Init(best_score, body_start, speed, border_col, snake_col, adaptive_speed);
+                    Init(best_score, body_start, speed, border_col, snake_col);
                 }
             }
 
             if (snake.keyInfo.Key == ConsoleKey.Escape)
             {
-                Init(best_score, body_start, speed, border_col, snake_col, adaptive_speed);
+                Init(best_score, body_start, speed, border_col, snake_col);
             }
             Thread.Sleep(100);
         }
@@ -459,7 +456,7 @@ namespace Snake_Game
             Console.SetCursorPosition(curLeft, curTop);
         }
 
-        public void Init(int best, int body_start, int speed, bool border_c, bool snake_c, bool a_speed)
+        public void Init(int best, int body_start, int speed, bool border_c, bool snake_c)
         {
             Snake snake = new Snake();
 
@@ -495,7 +492,7 @@ namespace Snake_Game
             Console.SetWindowSize(43, 25);
             Snake snake = new Snake();
 
-            snake.Init(0, 3, 5, true, true, false);
+            snake.Init(0, 3, 5, true, true);
         }
     }
 }
