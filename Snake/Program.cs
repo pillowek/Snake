@@ -2,7 +2,7 @@
 using System.Threading;
 
 /*      Snake Game (School project)
- *  github: 
+ *  github: https://github.com/pillowek/Snake
  *  
  *  starting date: 4.21.
  *  finish date: 4.22.
