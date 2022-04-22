@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 
-/*      TODO:
+/*   TODO:
  * - border
  * - crash
  * - score
@@ -9,7 +9,6 @@ using System.Threading;
  * - adaptive speed
  * - fix stopping
  * - menu/settings/play in switch
- * - better apple generation
  */
 
 
@@ -23,18 +22,18 @@ namespace Snake_Game
         int[] X = new int[800];
         int[] Y = new int[800];
 
+        public int selected = 0;
+        public int body = 3;
+        public int speed = 100;
+        public bool border_col;
+        public bool snake_col;
+        public int best_score = 0;
+
         int appleX;
         int appleY;
 
-        int selected = 0;
-
-        int body = 3;
-        int speed = 100;
-        bool border_col;
-        bool snake_col;
-
         ConsoleKeyInfo keyInfo = new ConsoleKeyInfo();
-        char key = 'W';
+        string key = "d";
 
         Random rnd = new Random();
 
@@ -81,6 +80,12 @@ namespace Snake_Game
                 Console.SetCursorPosition(width + 2, i);
                 Console.Write("║");
             }
+            Console.SetCursorPosition(5, height + 3);
+            Console.Write("Score: ");
+            Console.Write(body - 3);
+            Console.SetCursorPosition(25, height + 3);
+            Console.Write("Best Score: ");
+            Console.Write(best_score);
         }
 
         public void Input()
@@ -88,7 +93,17 @@ namespace Snake_Game
             if(Console.KeyAvailable)
             {
                 keyInfo = Console.ReadKey(true);
-                key = keyInfo.KeyChar;
+                if (keyInfo.KeyChar == 'w' || keyInfo.KeyChar == 's' || keyInfo.KeyChar == 'd' || keyInfo.KeyChar == 'a')
+                {
+                    if(key == "w" && keyInfo.KeyChar != 's')
+                        key = keyInfo.KeyChar.ToString();
+                    if (key == "a" && keyInfo.KeyChar != 'd')
+                        key = keyInfo.KeyChar.ToString();
+                    if (key == "s" && keyInfo.KeyChar != 'w')
+                        key = keyInfo.KeyChar.ToString();
+                    if (key == "d" && keyInfo.KeyChar != 'a')
+                        key = keyInfo.KeyChar.ToString();
+                }
             }
         }
 
@@ -119,6 +134,9 @@ namespace Snake_Game
 
         public void Logic()
         {
+            if(body - 3 > best_score)
+                best_score = body - 3;
+
             if(X[0] == appleX)
             {
                 if(Y[0] == appleY)
@@ -126,6 +144,16 @@ namespace Snake_Game
                     body++;
                     appleX = rnd.Next(2, (width - 2));
                     appleY = rnd.Next(2, (height - 2));
+
+                    for (int i = 0; i < body; i++)
+                    {
+                        if(X[i] == appleX && Y[i] == appleY)
+                        {
+                            appleX = rnd.Next(2, (width - 2));
+                            appleY = rnd.Next(2, (height - 2));
+                            i = 0;
+                        }
+                    }
                 }
             }
 
@@ -137,17 +165,20 @@ namespace Snake_Game
 
             switch(key)
             {
-                case 'w':
+                case "w":
                     Y[0]--;
                     break;
-                case 's':
+                case "s":
                     Y[0]++;
                     break;
-                case 'd':
+                case "d":
                     X[0]++;
                     break;
-                case 'a':
+                case "a":
                     X[0]--;
+                    break;
+                default:
+
                     break;
             }
 
