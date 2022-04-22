@@ -5,7 +5,11 @@ using System.Threading;
  * - border
  * - crash
  * - score
- * - color
+ * - snake color
+ * - adaptive speed
+ * - fix stopping
+ * - menu/settings/play in switch
+ * - better apple generation
  */
 
 
