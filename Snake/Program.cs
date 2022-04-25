@@ -1,16 +1,6 @@
 ﻿using System;
 using System.Threading;
 
-/*      Snake Game (School project)
- *  github: https://github.com/pillowek/Snake
- *  
- *  starting date: 4.21.
- *  finish date: 4.22.
- *  
- *  notes:
- *  - not used to c# so the code might be messy
- */
-
 namespace Snake_Game
 {
     class Snake
