@@ -8,8 +8,8 @@ namespace Snake_Game
         public static int height = 20; // velikost
         public static int width = 40;
 
-        public int[] X = new int[800]; // maximalni velikost hada
-        public int[] Y = new int[800];
+        public int[] snakeX = new int[800]; // pozice X bunek hada
+        public int[] snakeY = new int[800]; // pozice Y bunek hada
 
         public int selected = 0; // zvoleny prvek v gui
         public int body; // pocet bunek
@@ -36,8 +36,8 @@ namespace Snake_Game
 
         Snake() // defaultni hodnoty pri startu
         {
-            X[0] = 5; // pozice hada
-            Y[0] = 5;
+            snakeX[0] = 5; // pozice hada
+            snakeY[0] = 5;
             Console.CursorVisible = false;
             appleX = rnd.Next(2, (width - 2)); // urceni polohy jablicka
             appleY = rnd.Next(2, (height - 2));
@@ -130,7 +130,7 @@ namespace Snake_Game
                 }
                 if (type == 1) // telo
                 {
-                    if (!(X[0] == x && Y[0] == y)) // prevence aby se hlava vykreslovala vzdy navrchu tela
+                    if (!(snakeX[0] == x && snakeY[0] == y)) // prevence aby se hlava vykreslovala vzdy navrchu tela
                     {
                         Console.ForegroundColor = ConsoleColor.Green;
                         Console.Write('O');
@@ -152,7 +152,7 @@ namespace Snake_Game
             {
                 for (int i = 1; i <= body; i++)
                 {
-                    if (X[0] == X[i] && Y[0] == Y[i])
+                    if (snakeX[0] == snakeX[i] && snakeY[0] == snakeY[i])
                     {
                         Init(3, best_score, body_start, speed, border_col, snake_col);
                     }
@@ -161,35 +161,35 @@ namespace Snake_Game
 
             if (border_col) // kolize s hranici
             {
-                if(X[0] == width + 2 || Y[0] == height + 2 || X[0] == 0 || Y[0] == 0)
+                if(snakeX[0] == width + 2 || snakeY[0] == height + 2 || snakeX[0] == 0 || snakeY[0] == 0)
                     Init(3, best_score, body_start, speed, border_col, snake_col);
             }
             else // presunuti hada na druhou stranu
             {
-                if(X[0] == width + 1 && key == 'd')
+                if(snakeX[0] == width + 1 && key == 'd')
                 {
-                    X[0] = 0;
+                    snakeX[0] = 0;
                 }
-                if (X[0] == 1 && key == 'a')
+                if (snakeX[0] == 1 && key == 'a')
                 {
-                    X[0] = width + 2;
+                    snakeX[0] = width + 2;
                 }
-                if (Y[0] == height + 1 && key == 's')
+                if (snakeY[0] == height + 1 && key == 's')
                 {
-                    Y[0] = 0;
+                    snakeY[0] = 0;
                 }
-                if (Y[0] == 1 && key == 'w')
+                if (snakeY[0] == 1 && key == 'w')
                 {
-                    Y[0] = height + 2;
+                    snakeY[0] = height + 2;
                 }
             }
 
             if(score > best_score) // nejlepsi score
                 best_score = score;
 
-            if(X[0] == appleX) // pridavani bunek hada kdyz je na jablicku
+            if(snakeX[0] == appleX) // pridavani bunek hada kdyz je na jablicku
             {
-                if(Y[0] == appleY)
+                if(snakeY[0] == appleY)
                 {
                     body++;
                     score++;
@@ -199,7 +199,7 @@ namespace Snake_Game
 
                     for (int i = 0; i < body; i++) // prevence generace jablicka v hadovo tele
                     {
-                        if(X[i] == appleX && Y[i] == appleY)
+                        if(snakeX[i] == appleX && snakeY[i] == appleY)
                         {
                             appleX = rnd.Next(2, (width - 2));
                             appleY = rnd.Next(2, (height - 2));
@@ -211,27 +211,27 @@ namespace Snake_Game
 
             for(int i = body; i > 1; i--) // urcovani polohy bunek za hadem
             {
-                X[i - 1] = X[i - 2];
-                Y[i - 1] = Y[i - 2];
+                snakeX[i - 1] = snakeX[i - 2];
+                snakeY[i - 1] = snakeY[i - 2];
             }
 
             switch(key) // smerovaci mechanismus
             {
                 case 'w':
                     if (scene == 2)
-                        Y[0]--;
+                        snakeY[0]--;
                     break;
                 case 's':
                     if (scene == 2)
-                        Y[0]++;
+                        snakeY[0]++;
                     break;
                 case 'd':
                     if (scene == 2)
-                        X[0]++;
+                        snakeX[0]++;
                     break;
                 case 'a':
                     if (scene == 2)
-                        X[0]--;
+                        snakeX[0]--;
                     break;
                 case '0':
                     Init(0, best_score, body_start, speed, border_col, snake_col);
@@ -241,9 +241,9 @@ namespace Snake_Game
             for (int i = 0; i <= (body - 1); i++) // vykreslovani charakteru
             {
                 if (i == 0)
-                    PointPos(X[i], Y[i], 0); // snake head
+                    PointPos(snakeX[i], snakeY[i], 0); // snake head
                 else
-                    PointPos(X[i], Y[i], 1); // snake body
+                    PointPos(snakeX[i], snakeY[i], 1); // snake body
 
                 PointPos(appleX, appleY, 2); // apple
             }
